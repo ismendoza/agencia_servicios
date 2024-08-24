@@ -110,3 +110,23 @@ WITH precios_actuales AS (
 	) 
 SELECT idOrdenServicio, fechaOrdenServicio, idServicio, servicio, placa, modelo, marca, precio FROM precios_actuales
 WHERE rn = 1;
+
+/* Mostrar todas las ordenes de servicio de un mes específico */
+WITH precios_actuales AS (
+SELECT os.idOrdenServicio, CONCAT(nombres, ' ', apellidos)as cliente, v.placa, os.fechaOrdenServicio, ps.precio, cantidad,
+	ROW_NUMBER() OVER (PARTITION BY s.idServicio, os.idOrdenServicio ORDER BY ps.fechaInicioVigencia DESC) AS rn
+FROM servicio s
+INNER JOIN precioServicio ps ON ps.idServicio = s.idServicio
+INNER JOIN detalleOrden dos ON s.idServicio = dos.idServicio
+INNER JOIN ordenServicio os ON dos.idOrdenServicio = os.idOrdenServicio
+INNER JOIN modelo mo ON ps.idModelo = mo.idModelo
+INNER JOIN motor mot ON ps.idMotor = mot.idMotor
+INNER JOIN marca ma ON mo.idMarca = ma.idMarca
+INNER JOIN vehiculo v ON os.placa = v.placa AND v.idModelo = mo.idModelo AND v.idMotor = mot.idMotor
+INNER JOIN cliente c ON v.idCliente = c.idCliente
+WHERE ps.fechaInicioVigencia <=  os.fechaOrdenServicio
+)
+SELECT idOrdenServicio AS 'No. Orden', fechaOrdenServicio, cliente, placa, SUM(precio * cantidad) as total FROM precios_actuales
+WHERE rn = 1
+	AND MONTH(fechaOrdenServicio) = 2
+GROUP BY idOrdenServicio ORDER BY fechaOrdenServicio;
