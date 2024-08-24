@@ -4,6 +4,7 @@ insert into modelo (modelo, idMarca) values ('Yaris', 1), ('Versa',2), ('Mazda 3
 insert into tipoCarroceria (tipoCarroceria) values ('Sedan'), ('Camioneta'), ('Hatchback');
 insert into estado(estado) values ('Activo');
 insert into estadoOrden(estadoOrden) values ('En progreo');
+insert into estadoOrden(estadoOrden) values ('Completada');
 
 -- Catalogo de servicios
 -- 1
