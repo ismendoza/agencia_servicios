@@ -9,8 +9,8 @@ salida="$directorio/backup_$fecha.sql"
 if [ ! -d $directorio ]; then
 
 	if ! mkdir -p "$directorio"; then
-	        echo "Error al crear el directorio: $directorio"
-            exit 1
+		echo "Error al crear el directorio: $directorio"
+            	exit 1
 	fi
 fi
 
