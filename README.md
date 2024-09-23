@@ -35,3 +35,7 @@ mysqldump -u root -p --databases --routines agencia_servicios > backup_agencia_s
 mysql -u root -p < backup_agencia_servicios.sql 
 ```
 
+## Base de datos en SQL Server
+
+<p align="justify">En el directorio SQL Server se encuentra el esquema, datos y consultas de la base de datos agencia_servicios</p>
+
