@@ -12,7 +12,7 @@ WITH precios_actuales AS (
     WHERE ps.fechaInicioVigencia <= NOW()
 		and v.placa = 'P-963JKL'
 	) 
-SELECT idServicio, servicio, modelo, motor, precio, fechaInicioVigencia FROM precios_actualesr
+SELECT idServicio, servicio, modelo, motor, precio, fechaInicioVigencia FROM precios_actuales
 WHERE rn = 1;
 
 /* CONSULTA PARA MOSTRAR UNA ORDEN DE SERVICIO Y SU DETALLE 
