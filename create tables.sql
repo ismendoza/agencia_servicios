@@ -37,9 +37,9 @@ create table empleado (
     idEstado int not null,
     createdAt timestamp default current_timestamp,
     primary key (idEmpleado),
-    constraint fk_empleado_idTipoEmpleado foreign key (idTipoEmpleado) references tipoEmpleado (idTipoEmpleado) on delete cascade on update cascade,
-    constraint fk_empleado_idDepartamento foreign key (idDepartamento) references departamento (idDepartamento) on delete cascade on update cascade,
-    constraint fk_empleado_idEstado foreign key (idEstado) references estado (idEstado) on delete cascade on update cascade
+    constraint fk_empleado_idTipoEmpleado foreign key (idTipoEmpleado) references tipoEmpleado (idTipoEmpleado),
+    constraint fk_empleado_idDepartamento foreign key (idDepartamento) references departamento (idDepartamento),
+    constraint fk_empleado_idEstado foreign key (idEstado) references estado (idEstado)
 );
 
 -- Crea tabla para cliente
@@ -56,7 +56,7 @@ create table cliente (
     idEstado int not null,
     createdAt timestamp default current_timestamp,
     primary key (idCliente),
-    constraint fk_cliente_idestado foreign key (idEstado) references estado (idEstado) on delete cascade on update cascade
+    constraint fk_cliente_idestado foreign key (idEstado) references estado (idEstado)
 );
 
 -- crea tabla para marca
@@ -71,7 +71,7 @@ create table modelo (
     modelo varchar(60) unique comment 'Nombre de modelo',
     idMarca int not null,
     primary key (idModelo),
-    constraint fk_modelo_idmarca foreign key (idMarca) references marca (idMarca) on delete cascade on update cascade
+    constraint fk_modelo_idmarca foreign key (idMarca) references marca (idMarca)
 );
 
 -- Crea tabla para tipo de carrocería de vehículo
@@ -103,10 +103,10 @@ create table vehiculo (
     idMotor int not null,
     idTipoCarroceria int not null,
     createdAt timestamp default current_timestamp,
-    constraint fk_vehiculo_idcliente foreign key (idCliente) references cliente (idCliente) on delete cascade on update cascade,
-    constraint fk_vehiculo_idmodelo foreign key (idModelo) references modelo (idModelo) on delete cascade on update cascade,
-    constraint fk_vehiculo_idmotor foreign key (idMotor) references motor (idMotor) on delete cascade on update cascade,
-    constraint fk_vehiculo_idtipocarroceria foreign key (idTipoCarroceria) references tipoCarroceria (idTipoCarroceria) on delete cascade on update cascade
+    constraint fk_vehiculo_idcliente foreign key (idCliente) references cliente (idCliente),
+    constraint fk_vehiculo_idmodelo foreign key (idModelo) references modelo (idModelo),
+    constraint fk_vehiculo_idmotor foreign key (idMotor) references motor (idMotor),
+    constraint fk_vehiculo_idtipocarroceria foreign key (idTipoCarroceria) references tipoCarroceria (idTipoCarroceria)
 );
 
 -- Crea la tabla servicio, la llave priaria se declara con key
@@ -123,13 +123,10 @@ create table precioServicio (
     fechaInicioVigencia date,
     precio decimal(12, 2),
     primary key (idServicio, idModelo, idMotor, fechaInicioVigencia),
-    index precioServicio_idServicio (idServicio),
-    index precioServicio_idModelo (idModelo),
-    index precioServicio_idMotor (idMotor),
     index precioServicio_fechaInicioVigencia (fechaInicioVigencia),
-    constraint fk_precioservicio_idservicio foreign key (idServicio) references servicio (idServicio) on delete cascade on update CASCADE,
-	constraint fk_precioservicio_idModelo foreign key (idModelo) references modelo (idModelo) on delete cascade on update cascade,
-    constraint fk_precioservicio_idMotor foreign key (idMotor) references motor (idMotor) on delete cascade on update cascade
+    constraint fk_precioservicio_idservicio foreign key (idServicio) references servicio (idServicio),
+	constraint fk_precioservicio_idModelo foreign key (idModelo) references modelo (idModelo),
+    constraint fk_precioservicio_idMotor foreign key (idMotor) references motor (idMotor)
 );
 
 create table ordenServicio (
@@ -139,9 +136,11 @@ create table ordenServicio (
     kmActual int,
     kmProximo int,
     idEstadoOrden int not null,
+    idEmpleado int not null,
     primary key (idOrdenServicio),
-    constraint fk_ordenservicio_placa foreign key (placa) references vehiculo (placa) on delete cascade on update cascade,
-    constraint fk_ordenservicio_idestadoorden foreign key(idEstadoOrden) references estadoOrden(idEstadoOrden) on delete cascade on update cascade
+    constraint fk_ordenservicio_placa foreign key (placa) references vehiculo (placa),
+    constraint fk_ordenservicio_idestadoorden foreign key(idEstadoOrden) references estadoOrden(idEstadoOrden),
+    constraint fk_ordenservicio_idempleado foreign key(idEmpleado) references empleado(idEmpleado)
 );
 
 -- Crea tabla detalle de orden de servicio
@@ -152,8 +151,6 @@ create table detalleOrden (
     -- precio decimal(12, 2) comment 'Para registro de precio actual en fecha de creación de ordenServicio',
     cantidad int,
     primary key(idOrdenServicio, idServicio),
-    key detalleOrden_idOrden_foreign (idOrdenServicio),
-    key detalleOrden_idServicio_foreign (idServicio),
     constraint fk_detalleorden_idordenservicio foreign key (idOrdenServicio) references ordenServicio (idOrdenServicio) on delete cascade on update cascade,
-    constraint fk_detalleorden_idservicio foreign key (idServicio) references servicio (idServicio) on delete cascade on update cascade
+    constraint fk_detalleorden_idservicio foreign key (idServicio) references servicio (idServicio)
 );

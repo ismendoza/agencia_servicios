@@ -102,9 +102,6 @@ CREATE TABLE precioServicio (
     fechaInicioVigencia DATE,
     precio DECIMAL(12,2),
     PRIMARY KEY (idServicio, idModelo, idMotor, fechaInicioVigencia),
-    INDEX ps_idservicio (idServicio),
-    INDEX ps_idmodelo (idModelo),
-    INDEX ps_idmotor (idMotor),
     INDEX ps_fechaiv (fechaInicioVigencia),
     CONSTRAINT fk_precioservicio_idservicio FOREIGN KEY (idServicio) REFERENCES servicio (idServicio),
     CONSTRAINT fk_precioservicio_idmodelo FOREIGN KEY (idModelo) REFERENCES modelo (idModelo),
@@ -128,8 +125,7 @@ CREATE TABLE detalleOrden (
     idOrdenServicio INT NOT NULL,
     idServicio INT NOT NULL,
     cantidad int,
-    INDEX do_idOrden_fk (idOrdenServicio),
-    INDEX do_idServicio_fk (idServicio),
+    PRIMARY KEY (idOrdenServicio, idServicio),
     CONSTRAINT fk_do_idOrdenServicio FOREIGN KEY (idOrdenServicio) REFERENCES ordenServicio (idOrdenServicio) ON DELETE CASCADE,
     CONSTRAINT fk_do_idServicio FOREIGN KEY (idServicio) REFERENCES servicio(idServicio)
 );
