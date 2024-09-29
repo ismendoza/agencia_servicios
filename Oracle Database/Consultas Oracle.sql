@@ -141,3 +141,33 @@ SELECT idOrdenServicio AS "No. Orden", fechaOrdenServicio, cliente, placa, tecni
 WHERE rn = 1
 	AND EXTRACT(MONTH FROM fechaOrdenServicio) = 4
 GROUP BY idOrdenServicio, fechaOrdenServicio, cliente, placa, tecnico ORDER BY fechaOrdenServicio;
+
+-- Crea un pivot para mostrar los ingresos mensuales
+-- Utilizar las lineas comentadas para manejar en números de mes
+WITH precios_actuales AS (
+        select os.fechaOrdenServicio, ps.precio, cantidad,
+            ROW_NUMBER() over (PARTITION BY s.idServicio, os.idOrdenServicio ORDER BY ps.fechaInicioVigencia DESC) as rn
+        from servicio s
+            INNER JOIN precioServicio ps ON ps.idServicio = s.idServicio
+            INNER JOIN detalleOrden dos ON s.idServicio = dos.idServicio
+            INNER JOIN ordenServicio os ON dos.idOrdenServicio = os.idOrdenServicio
+            INNER JOIN modelo mo on ps.idModelo = mo.idModelo
+            INNER JOIN motor mot on ps.idMotor = mot.idMotor
+            INNER JOIN vehiculo v on os.placa = v.placa and v.idModelo = mo.idModelo and v.idMotor = mot.idMotor
+        WHERE ps.fechaInicioVigencia <=  os.fechaOrdenServicio
+    )
+    SELECT *
+        FROM (
+            SELECT TRIM(TO_CHAR(fechaOrdenServicio, 'MONTH')) AS mes, SUM(precio * cantidad) AS total
+     		-- SELECT EXTRACT(MONTH FROM fechaOrdenServicio) AS mes, SUM(precio * cantidad) AS total
+            FROM precios_actuales
+            WHERE rn = 1
+            AND EXTRACT(YEAR FROM fechaOrdenServicio) = 2024
+            GROUP BY TRIM(TO_CHAR(fechaOrdenServicio, 'MONTH'))
+     		-- GROUP BY EXTRACT(MONTH FROM fechaOrdenServicio)
+        )
+    PIVOT (
+            SUM(total)
+            FOR mes IN ('JANUARY' AS Enero, 'FEBRUARY' AS Febrero, 'MARCH' AS Marzo, 'APRIL' AS Abril)
+     		-- FOR mes IN (1 AS Enero, 2 AS Febrero, 3 AS Marzo, 4 AS Abril)
+	);
